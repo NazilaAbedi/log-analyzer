@@ -23,7 +23,6 @@ def print_report(stats: dict):
     
     print("\nTOP 5 USER AGENTS:")
     for i, (agent, count) in enumerate(stats["top_user_agents"], 1):
-        # Shorten long user agents
         if len(agent) > 50:
             agent = agent[:47] + "..."
         print(f"  {i}. {agent}: {count}")
