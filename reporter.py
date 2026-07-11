@@ -1,8 +1,8 @@
 def print_report(stats):
 
-    print("=" * 60)
+    print("="*60)
     print("LOG ANALYSIS REPORT")
-    print("=" * 60)
+    print("="*60)
 
 
     print(
@@ -21,6 +21,7 @@ def print_report(stats):
         f"Error Rate: {stats['error_rate']:.2f}%"
     )
 
+
     print(
         f"4xx Errors: {stats['4xx']}"
     )
@@ -28,6 +29,7 @@ def print_report(stats):
     print(
         f"5xx Errors: {stats['5xx']}"
     )
+
 
     print(
         f"Bad Lines: {stats['bad_lines']}"
@@ -37,36 +39,23 @@ def print_report(stats):
 
     print("\nSTATUS CODES:")
 
-    total = stats["total_requests"]
-
-
-    for code, count in sorted(
-        stats["status_codes"].items()
-    ):
-
-        bar = ""
-
-        if total:
-            bar = "#" * int(
-                count / total * 40
-            )
-
+    for code,count in stats["status_codes"].items():
 
         print(
-            f"  {code}: {count:>6} {bar}"
+            f"  {code}: {count}"
         )
 
 
 
-    print("\nTOP ENDPOINTS:")
+    print("\nTOP 10 ENDPOINTS:")
 
-    for i, (endpoint, count) in enumerate(
+    for i,(path,count) in enumerate(
         stats["top_endpoints"],
         1
     ):
 
         print(
-            f"  {i}. {endpoint}: {count}"
+            f"  {i}. {path}: {count}"
         )
 
 
@@ -83,14 +72,11 @@ def print_report(stats):
         )
 
 
-        for hour, count in sorted(
-            hourly.items()
-        ):
+        for hour,count in sorted(hourly.items()):
 
             bar = "#" * int(
                 count / maximum * 50
             )
-
 
             print(
                 f"  {hour} {bar} {count}"
@@ -98,43 +84,35 @@ def print_report(stats):
 
 
 
-    suspicious = stats["suspicious_ips"]
-
-
-    if suspicious:
+    if stats["suspicious_ips"]:
 
         print(
             "\nSUSPICIOUS IPS:"
         )
 
 
-        for ip, data in list(
-            suspicious.items()
-        )[:5]:
+        for ip,data in stats["suspicious_ips"].items():
 
             print(
                 f"  {ip}: "
                 f"{data['401_count']} failures / "
-                f"{data['total']} requests "
+                f"{data['requests']} requests "
                 f"({data['failure_rate']:.1f}%)"
             )
 
 
 
-    spikes = stats["error_spikes"]
-
-
-    if spikes:
+    if stats["error_spikes"]:
 
         print(
             "\nERROR SPIKES:"
         )
 
 
-        for spike in spikes[:3]:
+        for item in stats["error_spikes"]:
 
             print(
-                f"  {spike['hour']}: "
-                f"{spike['error_rate']:.1f}% "
-                f"({spike['errors']}/{spike['total']})"
+                f"  {item['hour']}: "
+                f"{item['rate']:.1f}% "
+                f"({item['errors']}/{item['total']})"
             )

@@ -7,36 +7,57 @@ from reporter import print_report
 from utils import open_log_file
 
 
+
+def convert_json(data):
+
+    result = {}
+
+
+    for key,value in data.items():
+
+        if hasattr(value,"items"):
+
+            result[key] = dict(value)
+
+
+        elif isinstance(value,list):
+
+            result[key] = value
+
+
+        else:
+
+            result[key] = value
+
+
+    return result
+
+
+
+
 def main():
 
-    if len(sys.argv) < 2 or len(sys.argv) > 3:
+    if len(sys.argv) < 2:
 
         print(
             "Usage: python3 main.py <log_file> [--json]"
         )
 
-        sys.exit(1)
+        return
+
 
 
     file_path = sys.argv[1]
 
-    json_output = False
 
-
-    if len(sys.argv) == 3:
-
-        if sys.argv[2] == "--json":
-            json_output = True
-
-        else:
-            print(
-                "Unknown option"
-            )
-            sys.exit(1)
-
+    json_output = (
+        len(sys.argv) == 3
+        and sys.argv[2]=="--json"
+    )
 
 
     analyzer = LogAnalyzer()
+
 
 
     try:
@@ -60,25 +81,26 @@ def main():
 
     except FileNotFoundError:
 
-        print(
-            "File not found"
-        )
+        print("File not found")
 
-        sys.exit(1)
+        return
 
 
 
     stats = analyzer.statistics()
 
 
+
     if json_output:
 
         print(
             json.dumps(
-                convert_to_json(stats),
-                indent=4
+                convert_json(stats),
+                indent=4,
+                default=str
             )
         )
+
 
     else:
 
@@ -86,31 +108,7 @@ def main():
 
 
 
-def convert_to_json(data):
 
-    result = {}
+if __name__=="__main__":
 
-
-    for key, value in data.items():
-
-        if hasattr(value, "items"):
-
-            result[key] = dict(value)
-
-
-        elif isinstance(value, list):
-
-            result[key] = value
-
-
-        else:
-
-            result[key] = value
-
-
-    return result
-
-
-
-if __name__ == "__main__":
     main()

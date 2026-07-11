@@ -1,54 +1,46 @@
 import re
 from datetime import datetime
-from typing import Optional, Dict
 
 
-LOG_PATTERN = re.compile(
-    r'^(?P<ip>\S+) - - '
-    r'\[(?P<time>.*?)\] '
-    r'"(?P<method>\S+) (?P<path>\S+) (?P<protocol>.*?)" '
-    r'(?P<status>\d{3}) '
+PATTERN = re.compile(
+    r'(?P<ip>\S+) '
+    r'\S+ \S+ '
+    r'\[(?P<time>[^\]]+)\] '
+    r'"(?P<method>\S+) '
+    r'(?P<path>\S+) '
+    r'(?P<protocol>[^"]+)" '
+    r'(?P<status>\d+) '
     r'(?P<size>\S+) '
-    r'"(?P<referer>.*?)" '
-    r'"(?P<user_agent>.*?)"$'
+    r'"(?P<referer>[^"]*)" '
+    r'"(?P<user_agent>[^"]*)"'
 )
 
 
-def parse_line(line: str) -> Optional[Dict]:
-
-    match = LOG_PATTERN.match(line.strip())
-
-    if not match:
-        return None
+def parse_line(line):
 
     try:
-        return {
+        match = PATTERN.match(line.strip())
 
-            "ip": match.group("ip"),
+        if not match:
+            return None
 
-            "time": datetime.strptime(
-                match.group("time"),
-                "%d/%b/%Y:%H:%M:%S %z"
-            ),
+        data = match.groupdict()
 
-            "method": match.group("method"),
+        data["status"] = int(data["status"])
 
-            "path": match.group("path"),
+        if data["size"] == "-":
+            data["size"] = 0
+        else:
+            data["size"] = int(data["size"])
 
-            "protocol": match.group("protocol"),
 
-            "status": int(match.group("status")),
+        data["time"] = datetime.strptime(
+            data["time"],
+            "%d/%b/%Y:%H:%M:%S %z"
+        )
 
-            "size": (
-                0
-                if match.group("size") == "-"
-                else int(match.group("size"))
-            ),
+        return data
 
-            "referer": match.group("referer"),
-
-            "user_agent": match.group("user_agent")
-        }
 
     except Exception:
         return None

@@ -1,11 +1,17 @@
-# Log files
-*.log
-*.gz
-
 # Python
 __pycache__/
 *.pyc
 *.pyo
+
+# Log files
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Log files
+*.log
+*.gz
 
 # Mac
 .DS_Store
@@ -13,3 +19,6 @@ __pycache__/
 # IDE
 .vscode/
 .idea/
+
+# Test files
+tests/
