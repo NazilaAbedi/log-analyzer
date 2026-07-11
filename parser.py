@@ -3,25 +3,29 @@ from datetime import datetime
 from typing import Optional, Dict
 
 LOG_PATTERN = re.compile(
-    r'^(\S+) - - \[(.*?)\] "(\S+) (\S+) (\S+)" (\d{3}) (\d+|-) "(.*?)" "(.*?)"$'
+    r'(?P<ip>\S+) .* \[(?P<time>.*?)\] '
+    r'"(?P<method>\S+) (?P<path>\S+) (?P<protocol>.*?)" '
+    r'(?P<status>\d{3}) (?P<size>\S+)'
 )
 
 def parse_line(line: str) -> Optional[Dict]:
-    match = LOG_PATTERN.match(line.strip())
+    """Parse a single log line in Combined Log Format"""
+    if not line or not line.strip():
+        return None
+    
+    match = LOG_PATTERN.search(line)
     if not match:
         return None
     
     try:
         return {
-            'ip': match.group(1),
-            'time': datetime.strptime(match.group(2), '%d/%b/%Y:%H:%M:%S %z'),
-            'method': match.group(3),
-            'path': match.group(4),
-            'protocol': match.group(5),
-            'status': int(match.group(6)),
-            'size': int(match.group(7)) if match.group(7) != '-' else 0,
-            'referer': match.group(8),
-            'user_agent': match.group(9)
+            'ip': match.group('ip'),
+            'time': datetime.strptime(match.group('time'), '%d/%b/%Y:%H:%M:%S %z'),
+            'method': match.group('method'),
+            'path': match.group('path'),
+            'protocol': match.group('protocol'),
+            'status': int(match.group('status')),
+            'size': int(match.group('size')) if match.group('size') != '-' else 0
         }
-    except Exception:
+    except (ValueError, KeyError):
         return None
