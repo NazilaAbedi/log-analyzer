@@ -63,7 +63,7 @@ The program finds hours with a high rate of `5xx` errors.
 ### Gzip Support
 
 The program can read `.gz` log files directly.
-I'v used utility.py for this suuportation.
+I'v used utils.py for this suuportation.
 
 ---
 
