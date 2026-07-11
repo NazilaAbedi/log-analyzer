@@ -1,1 +1,15 @@
+# Log files
+*.log
+*.gz
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Mac
 .DS_Store
+
+# IDE
+.vscode/
+.idea/
